@@ -1,6 +1,7 @@
-int bit[100000],N;
-int update(int x,int v){
-	while(x<=N){
+const int MAXN = 1e5;
+int bit[MAXN];
+void update(int x,int v){
+	while(x<MAXN){
 		bit[x]+=v;
 		x+=(x&-x);
 	}

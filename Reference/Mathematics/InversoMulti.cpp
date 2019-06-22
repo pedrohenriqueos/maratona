@@ -17,3 +17,5 @@ var inv(var x, var mod){
 	var _phi = phi(mod) - 1;
 	return fast_expo(x,_phi,mod);
 }
+
+//fast_expo(x,MOD-2,MOD) = inverso(x) mod MOD
