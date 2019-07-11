@@ -1,7 +1,7 @@
 //s[i]*p^i mod m
 long long compute_hash(string const& s) {
-    const int p = 53;// lowercase letters p = 31. Uppercase and lowercase letters p = 53
-    const int m = 1e9+9;// prime number 1e9+9,((1LL<<61)-1)
+    const int p = 911382323; // p and m are prime
+    const int m = 972663749; // m*m < (1<<63)
     long long hash_value = 0;
     long long p_pow = 1;
     for (char c : s) {
