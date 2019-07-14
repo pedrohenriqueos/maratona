@@ -1,11 +1,11 @@
-int x[MAX_QUANTIDADE_ELEMENTOS][TAMANHO_ALFABETO]
+int x[MAX_QUANTIDADE_ELEMENTOS][TAMANHO_ALFABETO],id;
 inline void build(string &s){
-	int i = 0, v = 0;
+	int root = 0;
 	for(int i=0;i < s.size();i++){
-		if(x[v][s[i]-'a'] == 0)//s[i]-'A'
-			v = x[v][s[i]-'a'] = id ++;
+		if(x[root][s[i]-'a'] == 0)//s[i]-'A'
+			root = x[root][s[i]-'a'] = id ++;
 		else
-			v = x[v][s[i]-'a'];
+			root = x[root][s[i]-'a'];
 	}
-	// end string in v
+	// end string in root
 }
