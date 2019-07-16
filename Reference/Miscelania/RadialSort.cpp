@@ -11,15 +11,14 @@ double dist(point a){
 	return (a.fi-reference.fi)*(a.fi-reference.fi)+(a.se-reference.se)*(a.se-reference.se);
 }
 double ang(point a){
+	point _a = {a.fi-reference.fi,a.se-reference.se};
 	//            retorno em radiano
 	double anga = atan2(a.se,a.fi)*180.0/pi;
 	if(anga<EPS and fabs(a.se)>EPS) anga+=360.0;
 	return anga;
 }
 bool radialsort(point a,point b){
-	point _a = {a.fi-reference.fi,a.se-reference.se};
-	point _b = {b.fi-reference.fi,b.se-reference.se};
-	double anga = ang(_a), angb = ang(_b);
+	double anga = ang(a), angb = ang(b);
 	return ((fabs(anga-angb)<EPS)?dist(a)<dist(b):anga<angb);
 }
  
