@@ -1,3 +1,5 @@
+#include<bits/stdc++.h>
+using namespace std;
 #define pi acos(-1)
 #define fi first
 #define se second
@@ -13,8 +15,8 @@ double dist(point a){
 double ang(point a){
 	point _a = {a.fi-reference.fi,a.se-reference.se};
 	//            retorno em radiano
-	double anga = atan2(a.se,a.fi)*180.0/pi;
-	if(anga<EPS and fabs(a.se)>EPS) anga+=360.0;
+	double anga = atan2(_a.se,_a.fi)*180.0/pi;
+	if(anga<EPS and fabs(_a.se)>EPS) anga+=360.0;
 	return anga;
 }
 bool radialsort(point a,point b){
@@ -44,8 +46,7 @@ int32_t main(){
 	
 	sort(A.begin(),A.end(),radialsort);
 	for(auto &a:A){
-		point _a = {a.fi-reference.fi,a.se-reference.se};
-		double anga = ang(_a);
-		cout << _a.fi << " " << _a.se  <<" : " << anga << '\n';
+		double anga = ang(a);
+		cout << a.fi-reference.fi << " " << a.se-reference.se  <<" : " << anga << '\n';
 	}
 }
