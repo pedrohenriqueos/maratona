@@ -67,9 +67,9 @@ int32_t main(){
 		vector<pair<point,pair<int,int>>> P(s),Event(k-s);
 		int pos=0;
 		for(auto &a:P)
-			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.se=pos++,a.se.fi=0;
+			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.fi=pos++,a.se.se=0;
 		for(auto &a:Event)
-			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.se=pos++,a.se.fi=0;
+			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.fi=pos++,a.se.se=0;
 		for(auto &a:P) Event.pb(a);
 		point s1,s2;
 		int enu=0;
@@ -84,7 +84,7 @@ int32_t main(){
 			RetaPoints[i] = {s1,s2};
 			enu++;
 		}
-		vector<set<point>> ans(k); // pontos que são visto pelo i-ésimo [0,k)
+		vector<int> ans(k); // pontos que são visto pelo i-ésimo [0,k)
 		for(int i=0;i<s;i++){
 			reference = P[i].fi;
 			reta p1 = {P[i].fi.fi, {P[i].fi.se, 1.0} };
@@ -108,8 +108,7 @@ int32_t main(){
 						wall.erase(ele.se.fi);
 				}else{ //o elemento é um objeto a ser verificado
 					if(wall.empty() and (ele.fi.fi!=reference.fi or ele.fi.se!=reference.se)){
-						ans[i].insert(ele.fi);
-						ans[ele.se.se].insert(reference);
+						ans[i]++;
 					}else if(!wall.empty() and (ele.fi.fi!=reference.fi or ele.fi.se!=reference.se)){
 						bool fl = true;
 						reta p2 = {ele.fi.fi, {ele.fi.se, 1.0} };
@@ -125,12 +124,12 @@ int32_t main(){
 							}
 						}
 						if(fl)
-							ans[i].insert(ele.fi),ans[ele.se.se].insert(reference);
+							ans[i]++;
 					}
 				}
 			}	
 		}
 		for(int i =0;i<s;i++)
-			printf("%lld\n",(int)ans[i].size());//quantidade de elementos que são vistos pelo i-ésimo
+			printf("%lld\n",ans[i]);//quantidade de elementos que são vistos pelo i-ésimo
 	}
 }
