@@ -6,119 +6,88 @@ using namespace std;
 #define fi first
 #define se second
 #define pb push_back
-#define int long long
-#define x fi
-#define y se.fi
-#define z se.se
+#define LIMITE_X 10000000
 
-typedef pair<int,int> point;
-typedef pair<double,pair<double,double>> reta;
+using point = array<int,2>;
+using reta = pair<point,point>;
+using event = array<int,4>;
 
-const double EPS = 1e-9;
-
-reta Reta(reta a,reta b){
-	reta resp;
-	resp.x = a.y*b.z-a.z*b.y;
-	resp.y = a.z*b.x-a.x*b.z;
-	resp.z = a.x*b.y-a.y*b.x;
-	return resp;
+int cross(point p,point q,point r){
+	long long x = (1LL*(q[1]-p[1])*(r[0]-q[0]) - 1LL*(q[0]-p[0])*(r[1]-q[1]));
+	x = ((x==0)?0:((x<0)?-1:1));
+	return x;
 }
-reta intercessao(reta a,reta b){
-	reta i = Reta(a,b);
-	if(fabs(i.z)>EPS){//reduz ao ponto, i.z==0 -> retas paralelas
-		i.x/=i.z;
-		i.y/=i.z;
-		i.z/=i.z;
-	}
-	return i;
-}
-//                    intercessao,reta1={p1,p2},reta2={p2,p3}
-bool checkintercessao(reta inter,reta p1,reta p2,reta p3,reta p4){
-	return (inter.z>EPS and inter.y>=min(p1.y,p2.y) and inter.y<=max(p1.y,p2.y) and inter.x>=min(p1.x,p2.x) and inter.x<=max(p1.x,p2.x) and
-	inter.y>=min(p3.y,p4.y) and inter.y<=max(p3.y,p4.y) and inter.x>=min(p3.x,p4.x) and inter.x<=max(p3.x,p4.x));
+
+bool checkinter(reta a,reta b){
+	if(cross(a.fi,a.se,b.fi)*cross(a.fi,a.se,b.se)<=0 and
+	cross(b.fi,b.se,a.fi)*cross(b.fi,b.se,a.se)<=0)
+		return true;
+	return false;
 }
 
 point reference;
 
-double dist(point a){
-	return (a.fi-reference.fi)*(a.fi-reference.fi)+(a.se-reference.se)*(a.se-reference.se);
-}
-double ang(point a){
-	point _a = {a.fi-reference.fi,a.se-reference.se};
-	double anga=atan2(_a.se,_a.fi)*180.0/pi;
-	if(anga<EPS and fabs(_a.se)>EPS) anga+=360.0;
-	return anga;
+long long dist(point a){
+	return (a[0]-reference[0])*(a[0]-reference[0])+(a[1]-reference[1])*(a[1]-reference[1]);
 }
 
-bool radialsort(pair<point,pair<int,int>> a,pair<point,pair<int,int>> b){
-	double anga = ang(a.fi), angb = ang(b.fi);
-	return ((fabs(anga-angb)<EPS)?dist(a.fi)<dist(b.fi):anga<angb);
+bool half(point p){
+	assert(p[0]!=0 or p[1]!=0);
+	return p[1]>0 or (p[1]==0 and p[0]<0);
 }
 
-double angV(point a){ // O menor angulo entre o ponto e a referencia
-	point _a = {a.fi-reference.fi,a.se-reference.se};
-	double anga=atan2(_a.se,_a.fi)*180.0/pi;
-	return anga;
+bool radialsort(event x,event y){
+	point a = {x[0]-reference[0],x[1]-reference[1]};
+	point b = {y[0]-reference[0],y[1]-reference[1]};
+	if(a[0]==0 and a[1]==0) return false;
+	if(b[0]==0 and b[1]==0) return true;
+	return make_tuple(half(a),0,dist({x[0],x[1]})) < make_tuple(half(b),cross({0,0},a,b),dist({y[0],y[1]}));
 }
 
 int s,k,w;
 int32_t main(){
-	while(scanf("%lld %lld %lld",&s,&k,&w)!=EOF){
-		vector<pair<point,pair<int,int>>> P(s),Event(k-s);
+	while(scanf("%d %d %d",&s,&k,&w)!=EOF){
+		vector<point> P(k);
+		vector<event> Event;
 		int pos=0;
-		for(auto &a:P)
-			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.fi=pos++,a.se.se=0;
-		for(auto &a:Event)
-			scanf("%lld %lld",&a.fi.fi,&a.fi.se),a.se.fi=pos++,a.se.se=0;
-		for(auto &a:P) Event.pb(a);
-		point s1,s2;
+		for(auto &a:P){
+			scanf("%d %d",&a[0],&a[1]);
+			Event.push_back({a[0],a[1],0,pos++});
+		}
 		int enu=0;
-		pair<point,point> RetaPoints[w];
 		vector<reta> Retas(w);
-		for(int i=0;i<w;i++){
-			scanf("%lld %lld %lld %lld",&s1.fi,&s1.se,&s2.fi,&s2.se);
-			Event.pb({s1,{enu,-1}});
-			Event.pb({s2,{enu,-1}});
-			reta point1 = {s1.fi, {s1.se, 1.0} }, point2 = {s2.fi, {s2.se, 1.0} };
-			Retas[i] = Reta(point1,point2);
-			RetaPoints[i] = {s1,s2};
+		for(auto &Reta:Retas){
+			scanf("%d %d %d %d",&Reta.fi[0],&Reta.fi[1],&Reta.se[0],&Reta.se[1]);
+			Event.pb({Reta.fi[0],Reta.fi[1],-1,enu});
+			Event.pb({Reta.se[0],Reta.se[1],-1,enu});
 			enu++;
 		}
-		vector<int> ans(k); // pontos que são visto pelo i-ésimo [0,k)
+		vector<int> ans(s); // pontos que são visto pelo i-ésimo [0,s)
 		for(int i=0;i<s;i++){
-			reference = P[i].fi;
-			reta p1 = {P[i].fi.fi, {P[i].fi.se, 1.0} };
-			sort(Event.begin(),Event.end(),radialsort);
+			reference = P[i];
+			//rbegin(),rend(),para deixar os angulos crescentes
+			sort(Event.rbegin(),Event.rend(),radialsort);
 			set<int> wall;
-			
 			// Inicializa as paredes que existem ja no inicio, antes do 0°
 			for(int j=0;j<w;j++){
-				double v1 = angV(RetaPoints[j].fi);
-				double v2 = angV(RetaPoints[j].se);
-				if(((v1<EPS and fabs(v1)>EPS) or (v2<EPS and fabs(v2)>EPS)) and (v1>EPS or v2>EPS) and (fabs(v1)+fabs(v2)<180.0))
+				if(checkinter(Retas[j],{reference,{reference[0]+LIMITE_X,reference[1]}}))
 					wall.insert(j);
 			}
-			
 			//Sweep Line Radial
 			for(auto ele:Event){
-				if(ele.se.se==-1){ //o elemento é uma parede
-					if(wall.find(ele.se.fi)==wall.end())
-						wall.insert(ele.se.fi);
+				if(ele[2]==-1){ //o elemento é uma parede
+					if(wall.find(ele[3])==wall.end())
+						wall.insert(ele[3]);
 					else
-						wall.erase(ele.se.fi);
+						wall.erase(ele[3]);
 				}else{ //o elemento é um objeto a ser verificado
-					if(wall.empty() and (ele.fi.fi!=reference.fi or ele.fi.se!=reference.se)){
+					if(wall.empty() and (ele[0]!=reference[0] or ele[1]!=reference[1])){
 						ans[i]++;
-					}else if(!wall.empty() and (ele.fi.fi!=reference.fi or ele.fi.se!=reference.se)){
+					}else if(!wall.empty() and (ele[0]!=reference[0] or ele[1]!=reference[1])){
 						bool fl = true;
-						reta p2 = {ele.fi.fi, {ele.fi.se, 1.0} };
-						reta X = Reta(p1,p2);
-						reta inter;
-						reta p3,p4;
+						reta x = {reference,{ele[0],ele[1]}};
 						for(auto wallID:wall){
-							inter = intercessao(X,Retas[wallID]);
-							p3 = {RetaPoints[wallID].fi.fi, {RetaPoints[wallID].fi.se, 1.0} }, p4 = {RetaPoints[wallID].se.fi, {RetaPoints[wallID].se.se, 1.0} };
-							if(checkintercessao(inter,p1,p2,p3,p4)){
+							if(checkinter(Retas[wallID],x)){
 								fl=false;
 								break;
 							}
@@ -130,6 +99,6 @@ int32_t main(){
 			}	
 		}
 		for(int i =0;i<s;i++)
-			printf("%lld\n",ans[i]);//quantidade de elementos que são vistos pelo i-ésimo
+			printf("%d\n",ans[i]);//quantidade de elementos que são vistos pelo i-ésimo
 	}
 }
