@@ -6,19 +6,19 @@ using namespace std;
 #define fi first
 #define se second
 #define pb push_back
-#define LIMITE_X 10000000
+#define LIMITE_X 3000000
 
 using point = array<int,2>;
 using reta = pair<point,point>;
 using event = array<int,4>;
 
-int cross(point p,point q,point r){
+inline int cross(point p,point q,point r){
 	long long x = (1LL*(q[1]-p[1])*(r[0]-q[0]) - 1LL*(q[0]-p[0])*(r[1]-q[1]));
 	x = ((x==0)?0:((x<0)?-1:1));
 	return x;
 }
 
-bool checkinter(reta a,reta b){
+inline bool checkinter(reta a,reta b){
 	if(cross(a.fi,a.se,b.fi)*cross(a.fi,a.se,b.se)<=0 and
 	cross(b.fi,b.se,a.fi)*cross(b.fi,b.se,a.se)<=0)
 		return true;
@@ -27,11 +27,11 @@ bool checkinter(reta a,reta b){
 
 point reference;
 
-long long dist(point a){
+inline long long dist(point a){
 	return (a[0]-reference[0])*(a[0]-reference[0])+(a[1]-reference[1])*(a[1]-reference[1]);
 }
 
-bool half(point p){
+inline bool half(point p){
 	assert(p[0]!=0 or p[1]!=0);
 	return p[1]>0 or (p[1]==0 and p[0]<0);
 }
@@ -39,9 +39,16 @@ bool half(point p){
 bool radialsort(event x,event y){
 	point a = {x[0]-reference[0],x[1]-reference[1]};
 	point b = {y[0]-reference[0],y[1]-reference[1]};
-	if(a[0]==0 and a[1]==0) return false;
-	if(b[0]==0 and b[1]==0) return true;
-	return make_tuple(half(a),0,dist({x[0],x[1]})) < make_tuple(half(b),cross({0,0},a,b),dist({y[0],y[1]}));
+	if(a[1]==0 and a[0]>=0 and b[1]==0 and b[0]>=0)
+		return -dist({x[0],x[1]}) < -dist({y[0],y[1]});
+	if(a[1]==0 and a[0]>=0) return false;
+	if(b[1]==0 and b[0]>=0) return true;
+	if(half(a)==half(b))
+		if(cross({0,0},a,b)==0) 
+			return -dist({x[0],x[1]}) < -dist({y[0],y[1]});
+		else
+			return 0<cross({0,0},a,b);
+	return half(a)<half(b);
 }
 
 int s,k,w;
